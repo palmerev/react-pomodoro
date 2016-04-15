@@ -1,19 +1,28 @@
 import React from 'react'
 import { PropTypes } from 'react'
 
-const Counter = (props) => (
-  <div className="counter-component">
-    <span className="text-before">{props.textBefore}</span>
-    <div>
-      <button className="minus">-</button>
-      <span className="counter-value">{props.value}</span>
-      <button className="plus">+</button>
-    </div>
-    <span className="text-after">{props.textAfter}</span>
-  </div>
-)
+class Counter extends React.Component {
+  constructor() {
+    super()
+  }
+  render() {
+    return  (
+      <div className="counter-component">
+      <span className="text-before">{this.props.textBefore}</span>
+      <div>
+      <button className="minus" onClick={this.props.decrement}>-</button>
+      <span className="counter-value">{this.props.value}</span>
+      <button className="plus" onClick={this.props.increment}>+</button>
+      </div>
+      <span className="text-after">{this.props.textAfter}</span>
+      </div>
+    )
+  }
+}
 
 Counter.propTypes = {
+  decrement: PropTypes.func.isRequired,
+  increment: PropTypes.func.isRequired,
   textBefore: PropTypes.string,
   value: PropTypes.number.isRequired,
   textAfter: PropTypes.string
