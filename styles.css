@@ -1,0 +1,15 @@
+h1 {
+  text-align: center;
+}
+
+.counter-component {
+  background-color: #ccc;
+  margin: 20px;
+  padding: 10px;
+}
+
+.timer-display-component {
+  background-color: #ef67ef;
+  margin: 20px;
+  padding: 10px;
+}
