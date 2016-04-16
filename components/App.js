@@ -2,7 +2,7 @@ import React from 'react'
 
 import Counter from './Counter'
 import TimerDisplay from './TimerDisplay'
-import { INCREMENT, DECREMENT } from '../constants'
+import { INCREMENT, DECREMENT, statuses } from '../constants'
 
 
 export default class App extends React.Component {
@@ -17,14 +17,16 @@ export default class App extends React.Component {
         selectedLength: 25,
         minLength: workMin,
         maxLength: workMax,
-        currentTime: 0
       },
       breakTime: {
         selectedLength: 5,
         minLength: breakMin,
         maxLength: breakMax,
-        currentTime: 0
-      }
+      },
+      // user is either working, on a break, or inactive
+      session: statuses.INACTIVE,
+      timerRunning: false,
+      currentTime: 0
     }
     this.updateCounter = this.updateCounter.bind(this)
   }
@@ -68,6 +70,18 @@ export default class App extends React.Component {
         throw new Error('unknown counterId')
     }
   }
+  getTimerStatus() {
+    if (this.state.status === statuses.INACTIVE) {
+      return this.state.workTime.selectedLength
+    }
+    else {
+      return this.state.currentTime
+    }
+  }
+  toggleTimer() {
+    this.setState({ timerRunning: !this.state.timerRunning })
+    console.log("timerRunning: ", timerRunning)
+  }
   render() {
     return (
       <div>
@@ -90,7 +104,8 @@ export default class App extends React.Component {
           value={this.state.breakTime.selectedLength}
           textAfter="minutes"
         />
-        <TimerDisplay time={this.state.workTime.currentTime} />
+        <TimerDisplay handleOnClick={this.toggleTimer}
+          time={() => this.getTimerStatus()} />
       </div>
     )
   }
