@@ -10,7 +10,7 @@ const TimerDisplay = (props) => {
   return (
     <div className={displayClass} onClick={props.handleOnClick}>
       <div className="display-wrapper">
-        <div className="display">{props.time()}</div>
+        <div className="display">{props.getTime()}</div>
       </div>
     </div>
   )
@@ -18,7 +18,7 @@ const TimerDisplay = (props) => {
 
 TimerDisplay.propTypes = {
   handleOnClick: PropTypes.func.isRequired,
-  time: PropTypes.func.isRequired,
+  getTime: PropTypes.func.isRequired,
   isRunning: PropTypes.bool
 }
 

@@ -8,9 +8,9 @@ import { INCREMENT, DECREMENT, statuses } from '../constants'
 export default class App extends React.Component {
   constructor() {
     super()
-    const workMin = 0,
+    const workMin = 1,
           workMax = 120,
-          breakMin = 0,
+          breakMin = 1,
           breakMax = 120;
     this.state = {
       workTime: {
@@ -30,7 +30,7 @@ export default class App extends React.Component {
     }
     this.updateCounter = this.updateCounter.bind(this)
     this.toggleTimer = this.toggleTimer.bind(this)
-    this.getTimerStatus = this.getTimerStatus.bind(this)
+    this.getTime = this.getTime.bind(this)
   }
 
   updateCounter(counterId, action) {
@@ -114,7 +114,7 @@ export default class App extends React.Component {
         <TimerDisplay
           handleOnClick={this.toggleTimer}
           isRunning={this.state.timerRunning}
-          time={() => this.getTime()} />
+          getTime={this.getTime} />
       </div>
     )
   }
