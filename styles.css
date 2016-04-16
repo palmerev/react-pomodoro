@@ -8,8 +8,12 @@ h1 {
   padding: 10px;
 }
 
-.timer-display-component {
+.timer-display {
   background-color: #ef67ef;
   margin: 20px;
   padding: 10px;
+}
+
+.running {
+  background-color: #22ef45;
 }

@@ -29,6 +29,8 @@ export default class App extends React.Component {
       currentTime: 0
     }
     this.updateCounter = this.updateCounter.bind(this)
+    this.toggleTimer = this.toggleTimer.bind(this)
+    this.getTimerStatus = this.getTimerStatus.bind(this)
   }
 
   updateCounter(counterId, action) {
@@ -71,7 +73,7 @@ export default class App extends React.Component {
     }
   }
   getTimerStatus() {
-    if (this.state.status === statuses.INACTIVE) {
+    if (this.state.session === statuses.INACTIVE) {
       return this.state.workTime.selectedLength
     }
     else {
@@ -80,7 +82,12 @@ export default class App extends React.Component {
   }
   toggleTimer() {
     this.setState({ timerRunning: !this.state.timerRunning })
-    console.log("timerRunning: ", timerRunning)
+  }
+  componentWillMount() {
+    console.log("timerRunning: ", this.state.timerRunning)
+  }
+  componentDidUpdate() {
+    console.log("timerRunning: ", this.state.timerRunning)
   }
   render() {
     return (
@@ -104,7 +111,9 @@ export default class App extends React.Component {
           value={this.state.breakTime.selectedLength}
           textAfter="minutes"
         />
-        <TimerDisplay handleOnClick={this.toggleTimer}
+        <TimerDisplay
+          handleOnClick={this.toggleTimer}
+          isRunning={this.state.timerRunning}
           time={() => this.getTimerStatus()} />
       </div>
     )
