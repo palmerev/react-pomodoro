@@ -2,13 +2,8 @@ import React from 'react'
 
 import Counter from './Counter'
 import TimerDisplay from './TimerDisplay'
+import { INCREMENT, DECREMENT } from '../constants'
 
-
-const statuses = {
-  INACTIVE: 'INACTIVE',
-  BREAK: 'BREAK',
-  WORK: 'WORK'
-}
 
 export default class App extends React.Component {
   constructor() {
@@ -29,66 +24,48 @@ export default class App extends React.Component {
         minLength: breakMin,
         maxLength: breakMax,
         currentTime: 0
-      },
-      statuses: statuses
+      }
     }
-    this.increment = this.increment.bind(this)
-    this.decrement = this.decrement.bind(this)
-  }
-  increment(counterId) {
-    if (counterId === 'workTime') {
-      const length = this.state.workTime.selectedLength
-      const newLength = (
-        length === this.state.workTime.maxLength ? length : length + 1)
-      this.setState({
-        workTime: {
-          selectedLength: newLength,
-          minLength: this.state.workTime.minLength,
-          maxLength: this.state.workTime.maxLength,
-          currentTime: this.state.workTime.currentTime
-        }
-      })
-    }
-    else if (counterId === 'breakTime') {
-      const length = this.state.breakTime.selectedLength
-      const newLength = (length === this.state.breakTime.maxLength ? length : length + 1)
-      this.setState({
-        breakTime: {
-          selectedLength: newLength,
-          minLength: this.state.breakTime.minLength,
-          maxLength: this.state.breakTime.maxLength,
-          currentTime: this.state.breakTime.currentTime
-        }
-      })
-    }
+    this.updateCounter = this.updateCounter.bind(this)
   }
 
-  decrement(counterId) {
-    if (counterId === 'workTime') {
-      const length = this.state.workTime.selectedLength
-      const newLength = (
-        length === this.state.workTime.minLength ? length : length - 1)
-      this.setState({
-        workTime: {
-          selectedLength: newLength,
-          minLength: this.state.workTime.minLength,
-          maxLength: this.state.workTime.maxLength,
-          currentTime: this.state.workTime.currentTime
-        }
-      })
+  updateCounter(counterId, action) {
+    const counter = this.state[counterId],
+          len = counter.selectedLength
+    let newLength
+    switch (action) {
+      case INCREMENT:
+        newLength = (len < counter.maxLength ? len + 1 : len)
+        break
+      case DECREMENT:
+        newLength = (len > counter.minLength ? len - 1 : len)
+        break
+      default:
+        throw new Error('unknown action')
     }
-    else if (counterId === 'breakTime') {
-      const length = this.state.breakTime.selectedLength
-      const newLength = (
-        length === this.state.breakTime.minLength ? length : length - 1)
-      this.setState({
-        breakTime: {
-          selectedLength: newLength,
-          minLength: this.state.breakTime.minLength,
-          maxLength: this.state.breakTime.maxLength,
-          currentTime: this.state.breakTime.currentTime
-        }
-      })
+    switch (counterId) {
+      case 'breakTime':
+        this.setState({
+          breakTime: {
+            selectedLength: newLength,
+            minLength: this.state.breakTime.minLength,
+            maxLength: this.state.breakTime.maxLength,
+            currentTime: this.state.breakTime.currentTime
+          }
+        })
+        break
+      case 'workTime':
+        this.setState({
+          workTime: {
+            selectedLength: newLength,
+            minLength: this.state.workTime.minLength,
+            maxLength: this.state.workTime.maxLength,
+            currentTime: this.state.workTime.currentTime
+          }
+        })
+        break
+      default:
+        throw new Error('unknown counterId')
     }
   }
   render() {
@@ -98,8 +75,8 @@ export default class App extends React.Component {
         <Counter
           min={this.state.workTime.minLength}
           max={this.state.workTime.maxLength}
-          increment={() => { this.increment('workTime') }}
-          decrement={() => { this.decrement('workTime') }}
+          increment={() => { this.updateCounter('workTime', INCREMENT) }}
+          decrement={() => { this.updateCounter('workTime', DECREMENT) }}
           textBefore="Work for"
           value={this.state.workTime.selectedLength}
           textAfter="minutes"
@@ -107,8 +84,8 @@ export default class App extends React.Component {
         <Counter
           min={this.state.breakTime.minLength}
           max={this.state.breakTime.maxLength}
-          increment={() => { this.increment('breakTime') }}
-          decrement={() => { this.decrement('breakTime') }}
+          increment={() => { this.updateCounter('breakTime', INCREMENT) }}
+          decrement={() => { this.updateCounter('breakTime', DECREMENT) }}
           textBefore="Break for"
           value={this.state.breakTime.selectedLength}
           textAfter="minutes"
