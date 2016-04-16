@@ -72,7 +72,7 @@ export default class App extends React.Component {
         throw new Error('unknown counterId')
     }
   }
-  getTimerStatus() {
+  getTime() {
     if (this.state.session === statuses.INACTIVE) {
       return this.state.workTime.selectedLength
     }
@@ -114,7 +114,7 @@ export default class App extends React.Component {
         <TimerDisplay
           handleOnClick={this.toggleTimer}
           isRunning={this.state.timerRunning}
-          time={() => this.getTimerStatus()} />
+          time={() => this.getTime()} />
       </div>
     )
   }
