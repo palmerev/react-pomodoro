@@ -1,9 +1,9 @@
 import React from 'react'
+import moment from 'moment'
 
 import Counter from './Counter'
 import TimerDisplay from './TimerDisplay'
 import { INCREMENT, DECREMENT, statuses } from '../constants'
-
 
 export default class App extends React.Component {
   constructor() {
@@ -26,11 +26,12 @@ export default class App extends React.Component {
       // user is either working, on a break, or inactive
       session: statuses.INACTIVE,
       timerRunning: false,
-      currentTime: 0
+      endTime: moment()
     }
     this.updateCounter = this.updateCounter.bind(this)
     this.toggleTimer = this.toggleTimer.bind(this)
     this.getTime = this.getTime.bind(this)
+    this.startTimer = this.startTimer.bind(this)
   }
 
   updateCounter(counterId, action) {
@@ -54,7 +55,6 @@ export default class App extends React.Component {
             selectedLength: newLength,
             minLength: this.state.breakTime.minLength,
             maxLength: this.state.breakTime.maxLength,
-            currentTime: this.state.breakTime.currentTime
           }
         })
         break
@@ -64,7 +64,6 @@ export default class App extends React.Component {
             selectedLength: newLength,
             minLength: this.state.workTime.minLength,
             maxLength: this.state.workTime.maxLength,
-            currentTime: this.state.workTime.currentTime
           }
         })
         break
@@ -77,17 +76,31 @@ export default class App extends React.Component {
       return this.state.workTime.selectedLength
     }
     else {
-      return this.state.currentTime
+      return this.state.endTime
+      // return moment()
     }
   }
   toggleTimer() {
     this.setState({ timerRunning: !this.state.timerRunning })
   }
+  startTimer() {
+    this.setState(
+      { timerRunning: true,
+        endTime: 0
+      })
+  }
   componentWillMount() {
-    console.log("timerRunning: ", this.state.timerRunning)
+    const updateTime = function () {
+      this.setState({ endTime: moment() })
+      setTimeout(updateTime, 1000)
+    }.bind(this)
+    updateTime()
   }
   componentDidUpdate() {
-    console.log("timerRunning: ", this.state.timerRunning)
+    // console.log("timerRunning: ", this.state.timerRunning)
+    // if (this.state.timerRunning) {
+    //   console.log(this.state.endTime)
+    // }
   }
   render() {
     return (
@@ -112,9 +125,9 @@ export default class App extends React.Component {
           textAfter="minutes"
         />
         <TimerDisplay
-          handleOnClick={this.toggleTimer}
+          handleOnClick={this.startTimer}
           isRunning={this.state.timerRunning}
-          getTime={this.getTime} />
+          endTime={this.state.endTime} />
       </div>
     )
   }

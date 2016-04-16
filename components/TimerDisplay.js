@@ -1,16 +1,20 @@
 import React from 'react'
 import { PropTypes } from 'react'
+import moment from 'moment'
 import classnames from 'classnames'
+
 
 const TimerDisplay = (props) => {
   const displayClass = classnames(
-     'timer-display',
+     'display',
      { 'running': props.isRunning }
   )
   return (
-    <div className={displayClass} onClick={props.handleOnClick}>
+    <div className="timer-display" onClick={props.handleOnClick}>
       <div className="display-wrapper">
-        <div className="display">{props.getTime()}</div>
+        <div className={displayClass}>
+          <div className="time-value">{props.endTime.format('hh:mm:ss')}</div>
+        </div>
       </div>
     </div>
   )
@@ -18,7 +22,7 @@ const TimerDisplay = (props) => {
 
 TimerDisplay.propTypes = {
   handleOnClick: PropTypes.func.isRequired,
-  getTime: PropTypes.func.isRequired,
+  endTime: PropTypes.object,
   isRunning: PropTypes.bool
 }
 
