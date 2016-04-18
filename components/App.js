@@ -26,7 +26,8 @@ export default class App extends React.Component {
       // user is either working, on a break, or inactive
       session: statuses.INACTIVE,
       timerRunning: false,
-      endTime: 0
+      endTime: moment(),
+      timerId: null,
     }
     this.updateCounter = this.updateCounter.bind(this)
     this.getTime = this.getTime.bind(this)
@@ -70,6 +71,7 @@ export default class App extends React.Component {
         throw new Error('unknown counterId')
     }
   }
+
   getTime() {
     if (this.state.session === statuses.INACTIVE) {
       return this.state.workTime.selectedLength
@@ -78,24 +80,19 @@ export default class App extends React.Component {
       return this.state.endTime
     }
   }
-  startTimer() {
-    let endMoment = moment().add(this.state.workTime.selectedLength, 'minutes');
-    this.setState(
-      { timerRunning: true,
-        session: statuses.WORK,
-        endTime: endMoment })
-  }
-  componentDidUpdate() {
-    console.log(this.state.endTime)
-    if (moment().isSameOrAfter(this.state.endTime)) {
-      if (this.state.session === statuses.WORK) {
-        this.setState({ timerRunning: false, session: statuses.BREAK })
-      }
-      else if (this.state.session === statuses.BREAK) {
-        this.setState({ timerRunning: false, session: statuses.INACTIVE })
-      }
+
+  startTimer(timerId) {
+    debugger
+    if (!this.state.timerRunning) {
+      let endMoment = moment.duration(
+        this.state.workTime.selectedLength, 'minutes');
+      this.setState(
+        { timerRunning: true,
+          session: statuses.WORK,
+          endTime: endMoment })
     }
   }
+
   render() {
     return (
       <div>
@@ -122,7 +119,9 @@ export default class App extends React.Component {
           handleOnClick={this.startTimer}
           isRunning={this.state.timerRunning}
           getTime={this.getTime}
-          session={this.state.session} />
+          endTime={this.state.endTime}
+          session={this.state.session}
+          timerId={this.state.timerId} />
       </div>
     )
   }
