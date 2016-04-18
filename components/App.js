@@ -30,8 +30,11 @@ export default class App extends React.Component {
       timerId: null,
     }
     this.updateCounter = this.updateCounter.bind(this)
+    this.updateSession = this.updateSession.bind(this)
+    this.updateEndTime = this.updateEndTime.bind(this)
     this.getTime = this.getTime.bind(this)
     this.startTimer = this.startTimer.bind(this)
+    this.setTimerId = this.setTimerId.bind(this)
   }
 
   updateCounter(counterId, action) {
@@ -72,6 +75,10 @@ export default class App extends React.Component {
     }
   }
 
+  updateEndTime(newEndTime) {
+    this.setState({ endTime: newEndTime })
+  }
+
   getTime() {
     if (this.state.session === statuses.INACTIVE) {
       return this.state.workTime.selectedLength
@@ -80,9 +87,11 @@ export default class App extends React.Component {
       return this.state.endTime
     }
   }
-
-  startTimer(timerId) {
-    debugger
+  setTimerId(timerId) {
+    this.setState({ timerId: timerId })
+  }
+  startTimer(event) {
+    // debugger
     if (!this.state.timerRunning) {
       let endMoment = moment.duration(
         this.state.workTime.selectedLength, 'minutes');
@@ -92,7 +101,9 @@ export default class App extends React.Component {
           endTime: endMoment })
     }
   }
-
+  updateSession(status) {
+    this.setState({ timerRunning: false, session: status })
+  }
   render() {
     return (
       <div>
@@ -121,7 +132,11 @@ export default class App extends React.Component {
           getTime={this.getTime}
           endTime={this.state.endTime}
           session={this.state.session}
-          timerId={this.state.timerId} />
+          timerId={this.state.timerId}
+          updateEndTime={this.updateEndTime}
+          setTimerId={this.setTimerId}
+          updateSession={this.updateSession}
+        />
       </div>
     )
   }

@@ -13,10 +13,19 @@ class TimerDisplay extends React.Component {
     if (!this.props.timerId && nextProps.isRunning) {
       const countDown = function (props) {
         console.log(props.endTime)
-        props.endTime.subtract(1, 'second')
+        let newEndTime = moment.duration(
+          {
+            milliseconds: props.endTime.milliseconds(),
+            seconds: props.endTime.seconds(),
+            minutes: props.endTime.minutes(),
+          }
+        )
+
+        newEndTime.subtract(1, 'second')
+        props.updateEndTime(newEndTime)
       }
       const t = setInterval(countDown, 1000, nextProps)
-      this.setState({ timerId: t })
+      nextProps.setTimerId(t)
     }
   }
 
@@ -53,7 +62,7 @@ class TimerDisplay extends React.Component {
        'display',
        { 'running': this.props.isRunning }
     )
-    const formattedTime = this.formatDuration(this.props.getTime())
+    let formattedTime = this.formatDuration(this.props.getTime())
     return (
       <div>
       <div className="session-status">{this.props.session}</div>
@@ -73,10 +82,10 @@ class TimerDisplay extends React.Component {
     console.log("componentDidUpdate", time)
       if (moment.isDuration(time) && time.asSeconds() === 0) {
         if (this.props.session === statuses.WORK) {
-          this.setState({ timerRunning: false, session: statuses.BREAK })
+          this.props.updateSession(statuses.BREAK)
         }
         else if (this.props.session === statuses.BREAK) {
-          this.setState({ timerRunning: false, session: statuses.INACTIVE })
+          this.props.updateSession(statuses.INACTIVE)
         }
       }
   }
@@ -84,7 +93,7 @@ class TimerDisplay extends React.Component {
 
 TimerDisplay.propTypes = {
   handleOnClick: PropTypes.func.isRequired,
-  // endTime: PropTypes.object,
+  updateEndTime: PropTypes.func,
   getTime: PropTypes.func,
   isRunning: PropTypes.bool,
   session: PropTypes.string,
