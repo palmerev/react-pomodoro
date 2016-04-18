@@ -26,10 +26,9 @@ export default class App extends React.Component {
       // user is either working, on a break, or inactive
       session: statuses.INACTIVE,
       timerRunning: false,
-      endTime: moment()
+      endTime: 0
     }
     this.updateCounter = this.updateCounter.bind(this)
-    this.toggleTimer = this.toggleTimer.bind(this)
     this.getTime = this.getTime.bind(this)
     this.startTimer = this.startTimer.bind(this)
   }
@@ -77,30 +76,25 @@ export default class App extends React.Component {
     }
     else {
       return this.state.endTime
-      // return moment()
     }
   }
-  toggleTimer() {
-    this.setState({ timerRunning: !this.state.timerRunning })
-  }
   startTimer() {
+    let endMoment = moment().add(this.state.workTime.selectedLength, 'minutes');
     this.setState(
       { timerRunning: true,
-        endTime: 0
-      })
-  }
-  componentWillMount() {
-    const updateTime = function () {
-      this.setState({ endTime: moment() })
-      setTimeout(updateTime, 1000)
-    }.bind(this)
-    updateTime()
+        session: statuses.WORK,
+        endTime: endMoment })
   }
   componentDidUpdate() {
-    // console.log("timerRunning: ", this.state.timerRunning)
-    // if (this.state.timerRunning) {
-    //   console.log(this.state.endTime)
-    // }
+    console.log(this.state.endTime)
+    if (moment().isSameOrAfter(this.state.endTime)) {
+      if (this.state.session === statuses.WORK) {
+        this.setState({ timerRunning: false, session: statuses.BREAK })
+      }
+      else if (this.state.session === statuses.BREAK) {
+        this.setState({ timerRunning: false, session: statuses.INACTIVE })
+      }
+    }
   }
   render() {
     return (
@@ -127,7 +121,8 @@ export default class App extends React.Component {
         <TimerDisplay
           handleOnClick={this.startTimer}
           isRunning={this.state.timerRunning}
-          endTime={this.state.endTime} />
+          getTime={this.getTime}
+          session={this.state.session} />
       </div>
     )
   }
