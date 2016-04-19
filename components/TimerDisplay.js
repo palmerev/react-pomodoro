@@ -10,9 +10,9 @@ class TimerDisplay extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.timerId && nextProps.isRunning) {
+    if (!nextProps.timerId && nextProps.isRunning) {
       const countDown = function (props) {
-        console.log(props.endTime)
+        console.log('componentWillReceiveProps:endTime: ', props.endTime)
         let newEndTime = moment.duration(
           {
             milliseconds: props.endTime.milliseconds(),
@@ -77,7 +77,7 @@ class TimerDisplay extends React.Component {
     )
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const time = this.props.endTime
     console.log("componentDidUpdate", time)
       if (moment.isDuration(time) && time.asSeconds() === 0) {
