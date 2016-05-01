@@ -9,17 +9,6 @@ class TimerDisplay extends React.Component {
     this.formatDuration = this.formatDuration.bind(this)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.timerId && nextProps.isRunning) {
-      const countDown = function (props) {
-        console.log('componentWillReceiveProps:endTime: ', props.endTime)
-        props.updateEndTime()
-      }
-      const t = setInterval(countDown, 1000, nextProps)
-      nextProps.setTimerId(t)
-    }
-  }
-
   formatDuration(time) {
     // debugger
     let seconds
@@ -49,9 +38,9 @@ class TimerDisplay extends React.Component {
   }
 
   render() {
-    const displayClass = classnames(
+    const displayClasses = classnames(
        'display',
-       { 'running': this.props.isRunning }
+       { 'running': this.props.timerId }
     )
     let formattedTime = this.formatDuration(this.props.getTime())
     return (
@@ -59,7 +48,7 @@ class TimerDisplay extends React.Component {
       <div className="session-status">{this.props.session}</div>
       <div className="timer-display" onClick={this.props.handleOnClick}>
         <div className="display-wrapper">
-          <div className={displayClass}>
+          <div className={displayClasses}>
             <div className="time-value">{formattedTime}</div>
           </div>
         </div>
@@ -67,31 +56,14 @@ class TimerDisplay extends React.Component {
       </div>
     )
   }
-
-  componentDidUpdate(prevProps, prevState) {
-    const time = this.props.endTime
-    console.log("componentDidUpdate", time)
-      if (moment.isDuration(time) && time.asSeconds() === 0) {
-        if (this.props.session === statuses.WORK) {
-          this.props.updateSession(statuses.BREAK)
-        }
-        else if (this.props.session === statuses.BREAK) {
-          this.props.updateSession(statuses.INACTIVE)
-        }
-      }
-  }
 }
 
 TimerDisplay.propTypes = {
   handleOnClick: PropTypes.func.isRequired,
   updateEndTime: PropTypes.func,
   getTime: PropTypes.func,
-  isRunning: PropTypes.bool,
+  timerId: PropTypes.number,
   session: PropTypes.string,
-}
-
-TimerDisplay.defaultProps = {
-  isRunning: false
 }
 
 export default TimerDisplay

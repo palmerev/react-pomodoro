@@ -25,16 +25,17 @@ export default class App extends React.Component {
       },
       // user is either working, on a break, or inactive
       session: statuses.INACTIVE,
-      timerRunning: false,
-      endTime: moment(),
-      timerId: null,
+      endTime: null, // moment.duration
+      timerId: null, // number / integer
     }
     this.updateCounter = this.updateCounter.bind(this)
     this.updateSession = this.updateSession.bind(this)
     this.updateEndTime = this.updateEndTime.bind(this)
     this.getTime = this.getTime.bind(this)
-    this.startTimer = this.startTimer.bind(this)
+    // this.startTimer = this.startTimer.bind(this)
+    // this.stopTimer = this.stopTimer.bind(this)
     this.setTimerId = this.setTimerId.bind(this)
+    this.handleOnClick = this.handleOnClick.bind(this)
   }
 
   updateCounter(counterId, action) {
@@ -98,19 +99,67 @@ export default class App extends React.Component {
   setTimerId(timerId) {
     this.setState({ timerId: timerId })
   }
-  startTimer(event) {
-    // debugger
-    if (!this.state.timerRunning) {
-      let endMoment = moment.duration(
-        this.state.workTime.selectedLength, 'minutes');
-      this.setState(
-        { timerRunning: true,
-          session: statuses.WORK,
-          endTime: endMoment })
+  // startTimer() {
+  //   // debugger
+  //   if (!this.state.timerId) {
+  //     let workDuration = moment.duration(
+  //           this.state.workTime.selectedLength, 'minutes').toSeconds(),
+  //     endTime = this.state.endTime.toSeconds(),
+  //     newStartTime = Math.min(endTime, workDuration)
+  //
+  //     this.setState(
+  //       { timerId: true,
+  //         session: statuses.WORK,
+  //         endTime: workDuration })
+  //   }
+  // }
+  // stopTimer() {
+  //   if (this.state.timerId) {
+  //       clearInterval(this.state.timerId)
+  //       this.setState({ timerId: null })
+  //   }
+  // }
+  handleOnClick(event) {
+    let newEndTime, newTime;
+    // start the timer if it's not running
+    if (!this.state.timerId) {
+      const workDuration = moment.duration(
+            this.state.workTime.selectedLength, 'minutes')
+      // set the endTime for the first time
+      if (!this.state.endTime) {
+        const t = setInterval(this.updateEndTime, 1000)
+        this.setState(
+          { session: statuses.WORK,
+            endTime: workDuration,
+            timerId: t }
+        )
+      }
+      // resume from the previous endTime
+      else {
+        let newEndTime = moment.duration(
+          {
+            milliseconds: this.state.endTime.milliseconds(),
+            seconds: this.state.endTime.seconds(),
+            minutes: this.state.endTime.minutes(),
+          }
+        )
+        newTime = workDuration.asSeconds() < newEndTime.asSeconds() ? workDuration : newEndTime
+        const t = setInterval(this.updateEndTime, 1000)
+        this.setState(
+          { timerId: t,
+            session: statuses.WORK,
+            endTime: newTime }
+        )
+      }
+    }
+    // stop the timer if it's running
+    else if (this.state.timerId) {
+      clearInterval(this.state.timerId)
+      this.setState({ timerId: null })
     }
   }
   updateSession(status) {
-    this.setState({ timerRunning: false, session: status })
+    this.setState({ timerId: null, session: status })
   }
   render() {
     return (
@@ -135,8 +184,7 @@ export default class App extends React.Component {
           textAfter="minutes"
         />
         <TimerDisplay
-          handleOnClick={this.startTimer}
-          isRunning={this.state.timerRunning}
+          handleOnClick={this.handleOnClick}
           getTime={this.getTime}
           endTime={this.state.endTime}
           session={this.state.session}
