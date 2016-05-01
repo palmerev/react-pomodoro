@@ -75,7 +75,15 @@ export default class App extends React.Component {
     }
   }
 
-  updateEndTime(newEndTime) {
+  updateEndTime() {
+    let newEndTime = moment.duration(
+      {
+        milliseconds: this.state.endTime.milliseconds(),
+        seconds: this.state.endTime.seconds(),
+        minutes: this.state.endTime.minutes(),
+      }
+    )
+    newEndTime.subtract(1, 'second')
     this.setState({ endTime: newEndTime })
   }
 

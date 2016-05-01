@@ -13,16 +13,7 @@ class TimerDisplay extends React.Component {
     if (!nextProps.timerId && nextProps.isRunning) {
       const countDown = function (props) {
         console.log('componentWillReceiveProps:endTime: ', props.endTime)
-        let newEndTime = moment.duration(
-          {
-            milliseconds: props.endTime.milliseconds(),
-            seconds: props.endTime.seconds(),
-            minutes: props.endTime.minutes(),
-          }
-        )
-
-        newEndTime.subtract(1, 'second')
-        props.updateEndTime(newEndTime)
+        props.updateEndTime()
       }
       const t = setInterval(countDown, 1000, nextProps)
       nextProps.setTimerId(t)
