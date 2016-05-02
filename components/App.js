@@ -36,6 +36,9 @@ export default class App extends React.Component {
     this.stopTimer = this.stopTimer.bind(this)
     this.setTimerId = this.setTimerId.bind(this)
     this.handleOnClick = this.handleOnClick.bind(this)
+    this.getNextSession = this.getNextSession.bind(this)
+    this.getNextEndTime = this.getNextEndTime.bind(this)
+    this.tick = this.tick.bind(this)
   }
 
   updateCounter(counterId, action) {
@@ -75,17 +78,45 @@ export default class App extends React.Component {
         throw new Error('unknown counterId')
     }
   }
-
+  getNextEndTime() {
+    if (nextSession === statuses.WORK) {
+      return moment.duration(
+        this.state.workTime.selectedLength, 'minutes'
+      )
+    }
+    else if (nextSession === statuses.BREAK) {
+      return moment.duration(
+        this.state.breakTime.selectedLength, 'minutes'
+      )
+    }
+    else if (nextSession === statuses.INACTIVE) {
+      return null;
+    }
+  }
+  getNextSession() {
+    switch (this.state.session) {
+      case statuses.WORK:
+        return statuses.BREAK
+      case statuses.BREAK:
+        return statuses.INACTIVE
+      case statuses.INACTIVE:
+        return statuses.WORK
+      default:
+        throw new Error(`unknown session status ${this.state.session}`)
+    }
+  }
+  updateSession(status) {
+    this.setState({ session: status })
+  }
   updateEndTime() {
-    let newEndTime = moment.duration(
-      {
-        milliseconds: this.state.endTime.milliseconds(),
-        seconds: this.state.endTime.seconds(),
-        minutes: this.state.endTime.minutes(),
-      }
-    )
-    newEndTime.subtract(1, 'second')
-    this.setState({ endTime: newEndTime })
+    this.tick()
+    if (this.state.endTime.asSeconds() === 0) {
+      const nextSession = this.getNextSession()
+      const endTime = this.getNextEndTime(nextSession)
+
+      this.updateSession(nextSession)
+      this.setState({ session: nextSession, endTime: endTime })
+    }
   }
 
   getTime() {
@@ -133,6 +164,19 @@ export default class App extends React.Component {
       )
     }
   }
+  tick() {
+    let newEndTime = moment.duration(
+      {
+        milliseconds: this.state.endTime.milliseconds(),
+        seconds: this.state.endTime.seconds(),
+        minutes: this.state.endTime.minutes(),
+      }
+    )
+    if (newEndTime.asSeconds() > 0) {
+      newEndTime.subtract(1, 'second')
+      this.setState({ endTime: newEndTime })
+    }
+  }
   stopTimer() {
     if (this.state.timerId) {
         clearInterval(this.state.timerId)
@@ -146,9 +190,6 @@ export default class App extends React.Component {
     else {
       this.stopTimer()
     }
-  }
-  updateSession(status) {
-    this.setState({ timerId: null, session: status })
   }
   render() {
     return (
