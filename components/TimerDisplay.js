@@ -60,7 +60,6 @@ class TimerDisplay extends React.Component {
 
 TimerDisplay.propTypes = {
   handleOnClick: PropTypes.func.isRequired,
-  updateEndTime: PropTypes.func,
   getTime: PropTypes.func,
   timerId: PropTypes.number,
   session: PropTypes.string,

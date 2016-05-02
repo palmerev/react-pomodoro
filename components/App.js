@@ -25,19 +25,19 @@ export default class App extends React.Component {
       },
       // user is either working, on a break, or inactive
       session: statuses.INACTIVE,
-      endTime: null, // moment.duration
+      timeRemaining: null, // moment.duration
       timerId: null, // number / integer
     }
     this.updateCounter = this.updateCounter.bind(this)
     this.updateSession = this.updateSession.bind(this)
-    this.updateEndTime = this.updateEndTime.bind(this)
+    this.updateTimeRemaining = this.updateTimeRemaining.bind(this)
     this.getTime = this.getTime.bind(this)
     this.startTimer = this.startTimer.bind(this)
     this.stopTimer = this.stopTimer.bind(this)
     this.setTimerId = this.setTimerId.bind(this)
     this.handleOnClick = this.handleOnClick.bind(this)
     this.getNextSession = this.getNextSession.bind(this)
-    this.getNextEndTime = this.getNextEndTime.bind(this)
+    this.getNextTimeRemaining = this.getNextTimeRemaining.bind(this)
     this.tick = this.tick.bind(this)
   }
 
@@ -78,7 +78,7 @@ export default class App extends React.Component {
         throw new Error('unknown counterId')
     }
   }
-  getNextEndTime() {
+  getNextTimeRemaining() {
     if (nextSession === statuses.WORK) {
       return moment.duration(
         this.state.workTime.selectedLength, 'minutes'
@@ -108,14 +108,14 @@ export default class App extends React.Component {
   updateSession(status) {
     this.setState({ session: status })
   }
-  updateEndTime() {
+  updateTimeRemaining() {
     this.tick()
-    if (this.state.endTime.asSeconds() === 0) {
+    if (this.state..timeRemaining.asSeconds() === 0) {
       const nextSession = this.getNextSession()
-      const endTime = this.getNextEndTime(nextSession)
+      const timeRemaining = this.getNextTimeRemaining(nextSession)
 
       this.updateSession(nextSession)
-      this.setState({ session: nextSession, endTime: endTime })
+      this.setState({ session: nextSession, timeRemaining: timeRemaining })
     }
   }
 
@@ -124,7 +124,7 @@ export default class App extends React.Component {
       return this.state.workTime.selectedLength
     }
     else {
-      return this.state.endTime
+      return this.state.timeRemaining
     }
   }
   setTimerId(timerId) {
@@ -134,47 +134,47 @@ export default class App extends React.Component {
     let workDuration = moment.duration(
         this.state.workTime.selectedLength, 'minutes')
 
-    if (this.state.endTime === null) {
-      // set the endTime for the first time
-      if (!this.state.endTime) {
-        const t = setInterval(this.updateEndTime, 1000)
+    if (this.state.timeRemaining === null) {
+      // set the timeRemaining for the first time
+      if (!this.state.timeRemaining) {
+        const t = setInterval(this.updateTimeRemaining, 1000)
         this.setState(
           { session: statuses.WORK,
-            endTime: workDuration,
+            timeRemaining: workDuration,
             timerId: t }
         )
       }
     }
-    // resume from the previous endTime
+    // resume from the previous timeRemaining
     else {
-      const newEndTime = moment.duration(
+      const newTimeRemaining = moment.duration(
         {
-          milliseconds: this.state.endTime.milliseconds(),
-          seconds: this.state.endTime.seconds(),
-          minutes: this.state.endTime.minutes(),
+          milliseconds: this.state.timeRemaining.milliseconds(),
+          seconds: this.state.timeRemaining.seconds(),
+          minutes: this.state.timeRemaining.minutes(),
         }
       )
-      const newTime = workDuration.asSeconds() < newEndTime.asSeconds() ?
-          workDuration : newEndTime
-      const t = setInterval(this.updateEndTime, 1000)
+      const newTime = workDuration.asSeconds() < newTimeRemaining.asSeconds() ?
+          workDuration : newTimeRemaining
+      const t = setInterval(this.updateTimeRemaining, 1000)
       this.setState(
         { timerId: t,
           session: statuses.WORK,
-          endTime: newTime }
+          timeRemaining: newTime }
       )
     }
   }
   tick() {
-    let newEndTime = moment.duration(
+    let newTimeRemaining = moment.duration(
       {
-        milliseconds: this.state.endTime.milliseconds(),
-        seconds: this.state.endTime.seconds(),
-        minutes: this.state.endTime.minutes(),
+        milliseconds: this.state.timeRemaining.milliseconds(),
+        seconds: this.state.timeRemaining.seconds(),
+        minutes: this.state.timeRemaining.minutes(),
       }
     )
-    if (newEndTime.asSeconds() > 0) {
-      newEndTime.subtract(1, 'second')
-      this.setState({ endTime: newEndTime })
+    if (newTimeRemaining.asSeconds() > 0) {
+      newTimeRemaining.subtract(1, 'second')
+      this.setState({ timeRemaining: newTimeRemaining })
     }
   }
   stopTimer() {
@@ -218,10 +218,9 @@ export default class App extends React.Component {
         <TimerDisplay
           handleOnClick={this.handleOnClick}
           getTime={this.getTime}
-          endTime={this.state.endTime}
+          timeRemaining={this.state.timeRemaining}
           session={this.state.session}
           timerId={this.state.timerId}
-          updateEndTime={this.updateEndTime}
           setTimerId={this.setTimerId}
           updateSession={this.updateSession}
         />
