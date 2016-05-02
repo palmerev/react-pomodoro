@@ -32,8 +32,8 @@ export default class App extends React.Component {
     this.updateSession = this.updateSession.bind(this)
     this.updateEndTime = this.updateEndTime.bind(this)
     this.getTime = this.getTime.bind(this)
-    // this.startTimer = this.startTimer.bind(this)
-    // this.stopTimer = this.stopTimer.bind(this)
+    this.startTimer = this.startTimer.bind(this)
+    this.stopTimer = this.stopTimer.bind(this)
     this.setTimerId = this.setTimerId.bind(this)
     this.handleOnClick = this.handleOnClick.bind(this)
   }
@@ -99,32 +99,11 @@ export default class App extends React.Component {
   setTimerId(timerId) {
     this.setState({ timerId: timerId })
   }
-  // startTimer() {
-  //   // debugger
-  //   if (!this.state.timerId) {
-  //     let workDuration = moment.duration(
-  //           this.state.workTime.selectedLength, 'minutes').toSeconds(),
-  //     endTime = this.state.endTime.toSeconds(),
-  //     newStartTime = Math.min(endTime, workDuration)
-  //
-  //     this.setState(
-  //       { timerId: true,
-  //         session: statuses.WORK,
-  //         endTime: workDuration })
-  //   }
-  // }
-  // stopTimer() {
-  //   if (this.state.timerId) {
-  //       clearInterval(this.state.timerId)
-  //       this.setState({ timerId: null })
-  //   }
-  // }
-  handleOnClick(event) {
-    let newEndTime, newTime;
-    // start the timer if it's not running
-    if (!this.state.timerId) {
-      const workDuration = moment.duration(
-            this.state.workTime.selectedLength, 'minutes')
+  startTimer() {
+    let workDuration = moment.duration(
+        this.state.workTime.selectedLength, 'minutes')
+
+    if (this.state.endTime === null) {
       // set the endTime for the first time
       if (!this.state.endTime) {
         const t = setInterval(this.updateEndTime, 1000)
@@ -134,28 +113,38 @@ export default class App extends React.Component {
             timerId: t }
         )
       }
-      // resume from the previous endTime
-      else {
-        let newEndTime = moment.duration(
-          {
-            milliseconds: this.state.endTime.milliseconds(),
-            seconds: this.state.endTime.seconds(),
-            minutes: this.state.endTime.minutes(),
-          }
-        )
-        newTime = workDuration.asSeconds() < newEndTime.asSeconds() ? workDuration : newEndTime
-        const t = setInterval(this.updateEndTime, 1000)
-        this.setState(
-          { timerId: t,
-            session: statuses.WORK,
-            endTime: newTime }
-        )
-      }
     }
-    // stop the timer if it's running
-    else if (this.state.timerId) {
-      clearInterval(this.state.timerId)
-      this.setState({ timerId: null })
+    // resume from the previous endTime
+    else {
+      const newEndTime = moment.duration(
+        {
+          milliseconds: this.state.endTime.milliseconds(),
+          seconds: this.state.endTime.seconds(),
+          minutes: this.state.endTime.minutes(),
+        }
+      )
+      const newTime = workDuration.asSeconds() < newEndTime.asSeconds() ?
+          workDuration : newEndTime
+      const t = setInterval(this.updateEndTime, 1000)
+      this.setState(
+        { timerId: t,
+          session: statuses.WORK,
+          endTime: newTime }
+      )
+    }
+  }
+  stopTimer() {
+    if (this.state.timerId) {
+        clearInterval(this.state.timerId)
+        this.setState({ timerId: null })
+    }
+  }
+  handleOnClick(event) {
+    if (!this.state.timerId) {
+      this.startTimer()
+    }
+    else {
+      this.stopTimer()
     }
   }
   updateSession(status) {
