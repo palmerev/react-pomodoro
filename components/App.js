@@ -203,6 +203,7 @@ export default class App extends React.Component {
           textBefore="Work for"
           value={this.state.workTime.selectedLength}
           textAfter="minutes"
+          timerRunning={Boolean(this.state.timerId)}
         />
         <Counter
           min={this.state.breakTime.minLength}
@@ -212,6 +213,7 @@ export default class App extends React.Component {
           textBefore="Break for"
           value={this.state.breakTime.selectedLength}
           textAfter="minutes"
+          timerRunning={Boolean(this.state.timerId)}
         />
         <TimerDisplay
           handleOnClick={this.handleOnClick}

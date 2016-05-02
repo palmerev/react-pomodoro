@@ -6,14 +6,15 @@ class Counter extends React.Component {
     super()
   }
   render() {
+
     return  (
       <div className="counter-component">
       <span className="text-before">{this.props.textBefore}</span>
-      <div>
+      <fieldset disabled={this.props.timerRunning}>
       <button className="minus" onClick={this.props.decrement}>-</button>
       <span className="counter-value">{this.props.value}</span>
       <button className="plus" onClick={this.props.increment}>+</button>
-      </div>
+      </fieldset>
       <span className="text-after">{this.props.textAfter}</span>
       </div>
     )
@@ -21,6 +22,7 @@ class Counter extends React.Component {
 }
 
 Counter.propTypes = {
+  timerRunning: PropTypes.bool.isRequired,
   decrement: PropTypes.func.isRequired,
   increment: PropTypes.func.isRequired,
   textBefore: PropTypes.string,
@@ -28,4 +30,7 @@ Counter.propTypes = {
   textAfter: PropTypes.string
 }
 
+Counter.defaultProps = {
+  timerRunning: false
+}
 export default Counter
