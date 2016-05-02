@@ -18,7 +18,7 @@ h1 {
 
 .timer-display {
   position: relative;
-  background-color: #000;
+  background-color: #ddf;
 }
 
 .display-wrapper {
@@ -41,7 +41,7 @@ h1 {
   height: 100%;
   border-radius: 50%;
   text-align: center;
-  background-color: #ef67ef;
+  background-color: #fc0;
 }
 
 .time-value {
@@ -52,5 +52,5 @@ h1 {
   transform: translate(-50%, -50%);
 }
 .running {
-  background-color: #22ef45;
+  background-color: #36f;
 }
